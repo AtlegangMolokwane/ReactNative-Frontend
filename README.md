@@ -12,6 +12,6 @@
 ## Challenges faced
 - I was not able to create a profile page where you could edit the user name and image
 - When performing the CRUD, the data gets updated after you have reloaded the script again. 
-e.g after deleting, adding or editing item, you wont be able to see the changes unless you reload the page. I believe with your guidance I will be able to make it refresh autometically.
+e.g after deleting, adding or editing item, you wont be able to see the changes unless you reload the script. I believe with your guidance I will be able to make it refresh autometically.
 
 
