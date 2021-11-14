@@ -15,8 +15,7 @@ export default function Routes() {
     SecureStore.getItemAsync('user')
       .then(userString => {
         if (userString) {
-          // decode it
-          // login();
+          
           userObject = JSON.parse(userString)
           setUser(userObject);
         }

@@ -12,11 +12,18 @@ const Task = (props) => {
       </TouchableOpacity>
         <Text style={ isSelected ? styles.itemText : styles.itemTextCross}>{props.text}</Text>
       </View>
-      <TouchableOpacity onPress={props.delete}>
-        <View style={styles.circular}>
-        <Text style={styles.addText}>X</Text>
+      <View style={styles.row}>
+      <TouchableOpacity onPress={props.editItem}>
+        <View style={styles.editCircular}>
+        <Text style={styles.editAddText}>edit</Text>
         </View>
       </TouchableOpacity>
+      <TouchableOpacity onPress={props.delete}>
+        <View style={styles.circular}>
+        <Text style={styles.addText}>x</Text>
+        </View>
+      </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -37,8 +44,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap'
   },
   square: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     backgroundColor: '#55BCF6',
     opacity: 0.4,
     borderRadius: 5,
@@ -52,7 +59,12 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through', 
     textDecorationStyle: 'solid'
   },
+  row: {
+   
+    flexDirection: "row",
+  },
   circular: {
+    marginLeft: 15,
     width: 20,
     height: 20,
     borderColor: '#feb1b7',
@@ -63,6 +75,20 @@ const styles = StyleSheet.create({
   },
   addText: {
      color: '#fb788b',
+     fontWeight: "bold", 
+  },
+  editCircular: {
+    alignItems: 'flex-end',
+    width: 45,
+    height: 20,
+    borderColor: '#9DD9F3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  editAddText: {
+     color: '#77C3EC',
      fontWeight: "bold", 
   },
 });

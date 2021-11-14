@@ -9,48 +9,48 @@ import axios from 'axios';
 const Stack = createStackNavigator();
 
 function DashboardScreen({ navigation }) {
-  const url = "https://ff97-196-61-20-103.ngrok.io"
+  const url = "https://fat-octopus-30.loca.lt"
   const { user, logout } = useContext(AuthContext);
   const [item, setItem] = useState([]);
   const [task, setTask] = useState();
+  const [refreshKey, setRefreshKey] = useState(0);
 
-
-
-//   const [to_do, setTo_do] = useState([]);
 
   useEffect(() => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
 
-    axios.get('https://fresh-duck-29.loca.lt/api/to_dos')
+    axios.get(url+'/api/to_dos')
     .then(function(response){
         setItem([...response.data]);
         
-    })
+    },[refreshKey])
 
 
   }, []);
   const handleAddTask = () => {
-    axios.post('https://fresh-duck-29.loca.lt/api/to_dos', {
+    axios.post(url+'/api/to_dos', {
         item : task,
       })
     .then((response) => {
-      Keyboard.dismiss();
+      
       const userResponse = {
           item: response.data.item,
           created_at: response.data.created_at,
           id: response.data.id,
           updated_at: response.data.updated_at
             }
+
       setTask(userResponse);
       console.log(task)
       setItem([...item, task])
       setTask(null)
-    })
+      setRefreshKey(oldKey => oldKey +1)
+    })  
   }
 
   const completeTask = (id) => {
         let itemsCopy = [...item];
-        axios.delete('https://fresh-duck-29.loca.lt/api/to_dos/'+id)
+        axios.delete(url+'/api/to_dos/'+id)
         .then(() => 
         itemsCopy.splice(id, 1),
         setItem(itemsCopy),
@@ -67,15 +67,15 @@ function DashboardScreen({ navigation }) {
       <View style={styles.tasksWrapper}>
       <Text style={styles.sectionTitle}>ToDo List!</Text>
       <Text>User: {user.email}</Text>
-      <View style={styles.items}>
+      <View style={styles.items}> 
       {item && item.map((item) => {
           return( 
-            <Task key={item.id} text={item.item} delete = {()=> completeTask(item.id)}/>
+            <Task key={item.id} text={item.item} delete = {()=> completeTask(item.id)} editItem={() => navigation.navigate('EditItem', {id: item.id, item: item.item})}/>
           
           )})}
       </View>
       </View>
-      <Button title="Go to Settings" onPress={() => navigation.navigate('Settings')} />
+      <Button title="Go to EditItem" />
       <Button title="Logout" onPress={() => logout()} />
       </ScrollView>
       <KeyboardAvoidingView 
@@ -83,7 +83,7 @@ function DashboardScreen({ navigation }) {
         style={styles.writeTaskWrapper}
       >
           <View style={styles.row}>
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
+        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={item => setTask(item)} />
         <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
@@ -95,15 +95,42 @@ function DashboardScreen({ navigation }) {
   );
 }
 
-function SettingsScreen({ navigation }) {
-  const { user, logout } = useContext(AuthContext)
+function EditItemScreen({ route, navigation }) {
+  const { id } = route.params;
+  const url = "https://fat-octopus-30.loca.lt"
+  const { item } = route.params;
+  const { user, logout } = useContext(AuthContext);
+  const [task, setTask] = useState();
 
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Settings Screen</Text>
-      <Text>User: {user.email}</Text>
-      <Button title="Go to Dashboard" onPress={() => navigation.navigate('Dashboard')} />
+
+  const handleEditTask = () => {
+    const ID = JSON.stringify(id) 
+    axios.put(url+'/api/to_dos/'+ID,{ 
+        item: task.text}
+      )
+    .then(function(response){
+      setTask(''); 
+      console.log(response.data.item)
+    })    
+  }
+
+
+  return ( 
+    <View style={styles.container}>
+
+      <Text >User: {user.email}</Text>
+
       <Button title="Logout" onPress={() => logout()} />
+          <View style={styles.editRow}>
+        <TextInput style={styles.editInput} placeholder={'Write a task'} defaultValue={task} onChangeText={text => setTask({text})} />
+        <TouchableOpacity>
+          <View style={styles.addWrapper}>
+            <Text style={styles.addText} onPress={() => handleEditTask()}>edit</Text>
+          </View>
+        </TouchableOpacity>
+        </View>
+
+      
     </View>
   );
 }
@@ -112,7 +139,7 @@ export const AppStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="EditItem" component={EditItemScreen} />
     </Stack.Navigator>
   )
 }
@@ -123,9 +150,14 @@ const styles = StyleSheet.create({
       backgroundColor: '#E8EAED',
     },
     row: {
-        flex: 1,
-        flexDirection: "row",
-      },
+      flex: 1,
+      flexDirection: "row",
+    },
+    editRow: {
+      flex: 1,
+      marginTop:60,
+      flexDirection: "row",
+    },
     tasksWrapper: {
       paddingTop: 40,
       paddingHorizontal: 20,
@@ -157,6 +189,17 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       width: 250,
     },
+    editInput: {
+      marginRight: 20,
+      paddingVertical: 15,
+      paddingHorizontal: 15,
+      backgroundColor: '#FFF',
+      borderRadius: 60,
+      borderColor: '#C0C0C0',
+      borderWidth: 1,
+      width: 250,
+      height:60,
+    },
     addWrapper: {
       width: 60,
       height: 60,
@@ -169,3 +212,4 @@ const styles = StyleSheet.create({
     },
     addText: {},
   });
+  

@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { AsyncStorage } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
-import {BASE_URL} from '@env'
-
-// axios.defaults.baseURL = 'https://ff97-196-61-20-103.ngrok.io';
 
 export const AuthContext = React.createContext({});
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const url = "https://ff97-196-61-20-103.ngrok.io"
+  const url = "https://fat-octopus-30.loca.lt"
 
   return (
     <AuthContext.Provider
@@ -19,27 +15,28 @@ export const AuthProvider = ({children}) => {
         user,
         setUser,
         error,
-        // register: (email, password, name,) => {
-        //     axios.post('/register', {
-        //       name,
-        //       email,
-        //       password,
-        //     })
-        //     .then(response => {
-        //       const userResponse = {
-        //         email: response.data.user.email,
-        //         name: response.data.user.name,
-        //         password: response.data.user.password,
-        //         token: response.data.token,
-        //       }
-        //       setUser(userResponse);
-        //       setError(null);
-        //       SecureStore.setItemAsync('user', JSON.stringify(userResponse));
-        //     })
-        //     .catch(error => {
-        //         console.log(error.toJSON());
-        //     })
-        // //   },
+        register: (name, email, password,password_confirmation) => {
+            axios.post(url+'/api/register', {
+              name,
+              email,
+              password,
+              password_confirmation
+            })
+            .then(response => {
+              const userResponse = {
+                name: response.data.user.name,
+                email: response.data.user.email,
+                password: response.data.user.password,
+                token: response.data.token,
+              }
+              setUser(userResponse);
+              setError(null);
+              SecureStore.setItemAsync('user', JSON.stringify(userResponse));
+            })
+            .catch(error => {
+                console.log(error.toJSON());
+            })
+          },
             login: (email, password) => {
                axios.post(url+'/api/login', {
                 email,
