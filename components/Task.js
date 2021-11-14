@@ -9,7 +9,7 @@ const Task = (props) => {
       <View style={styles.itemLeft}>
       <TouchableOpacity onPress={() => setSelection(isSelected=>!isSelected)}>
         <View style={styles.square}></View>
-        </TouchableOpacity>
+      </TouchableOpacity>
         <Text style={ isSelected ? styles.itemText : styles.itemTextCross}>{props.text}</Text>
       </View>
       <TouchableOpacity onPress={props.delete}>
